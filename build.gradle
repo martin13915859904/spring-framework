@@ -97,3 +97,23 @@ configure([rootProject] + javaProjects) { project ->
 configure(moduleProjects) { project ->
 	apply from: "${rootDir}/gradle/spring-module.gradle"
 }
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+java {
+    // 修改Java版本为Java 21
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
+
+// 添加工具链配置，确保Gradle能够正确选择Java版本
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21) // 使用Java 21
+        vendor = JvmVendorSpec.AZUL // 更改为Azul（或其他可用供应商）
+        // 如果需要特定供应商，可以注释掉上述vendor行，并使用以下代码：
+        // vendor = JvmVendorSpec.matching { it.name == 'BellSoft' }
+    }
+}
