@@ -362,6 +362,7 @@ public class PathMatchingResourcePatternResolver implements ResourcePatternResol
 			// a class path resource (multiple resources for same name possible)
 			String locationPatternWithoutPrefix = locationPattern.substring(CLASSPATH_ALL_URL_PREFIX.length());
 			// Search the module path first.
+			// 可能存在两种形式FileSystemResource|UrlResource
 			Set<Resource> resources = findAllModulePathResources(locationPatternWithoutPrefix);
 			// Search the class path next.
 			if (getPathMatcher().isPattern(locationPatternWithoutPrefix)) {
