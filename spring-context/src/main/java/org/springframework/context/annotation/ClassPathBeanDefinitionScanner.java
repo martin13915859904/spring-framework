@@ -275,13 +275,17 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
 		for (String basePackage : basePackages) {
 			Set<BeanDefinition> candidates = findCandidateComponents(basePackage);
 			for (BeanDefinition candidate : candidates) {
+				// 解析注解Scope信息
 				ScopeMetadata scopeMetadata = this.scopeMetadataResolver.resolveScopeMetadata(candidate);
 				candidate.setScope(scopeMetadata.getScopeName());
+				// 获取beanName
 				String beanName = this.beanNameGenerator.generateBeanName(candidate, this.registry);
 				if (candidate instanceof AbstractBeanDefinition abstractBeanDefinition) {
+					// TODO BeanDefinition#setAutowireCandidate的作用是什么？
 					postProcessBeanDefinition(abstractBeanDefinition, beanName);
 				}
 				if (candidate instanceof AnnotatedBeanDefinition annotatedBeanDefinition) {
+					// 解析注解@Lazy @Primary @Fallback @DependsOn @Role @Description的值并set到对应的BeanDefinition属性中去
 					AnnotationConfigUtils.processCommonDefinitionAnnotations(annotatedBeanDefinition);
 				}
 				if (checkCandidate(beanName, candidate)) {

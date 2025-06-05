@@ -124,7 +124,7 @@ public class AnnotationBeanNameGenerator implements BeanNameGenerator {
 	 */
 	protected @Nullable String determineBeanNameFromAnnotation(AnnotatedBeanDefinition annotatedDef) {
 		AnnotationMetadata metadata = annotatedDef.getMetadata();
-
+		// 直接获取Component注解里面标注的名称
 		String beanName = getExplicitBeanName(metadata);
 		if (beanName != null) {
 			return beanName;
