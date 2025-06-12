@@ -273,14 +273,16 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
 		Assert.notEmpty(basePackages, "At least one base package must be specified");
 		Set<BeanDefinitionHolder> beanDefinitions = new LinkedHashSet<>();
 		for (String basePackage : basePackages) {
+			// 扫描package->提取Resource->Filter获取所有候选的beanDefinition
 			Set<BeanDefinition> candidates = findCandidateComponents(basePackage);
 			for (BeanDefinition candidate : candidates) {
 				// 解析注解Scope信息
 				ScopeMetadata scopeMetadata = this.scopeMetadataResolver.resolveScopeMetadata(candidate);
 				candidate.setScope(scopeMetadata.getScopeName());
-				// 获取beanName
+				// 获取beanName，如果Component  注解有name属性，则使用name属性的值作为beanName，否则用Class的名称作为beanName
 				String beanName = this.beanNameGenerator.generateBeanName(candidate, this.registry);
 				if (candidate instanceof AbstractBeanDefinition abstractBeanDefinition) {
+					// 设置BeanDefinition的默认属性lazyInit autowireMode dependencyCheck initMethodName destroyMethodName
 					// TODO BeanDefinition#setAutowireCandidate的作用是什么？
 					postProcessBeanDefinition(abstractBeanDefinition, beanName);
 				}
@@ -290,9 +292,12 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
 				}
 				if (checkCandidate(beanName, candidate)) {
 					BeanDefinitionHolder definitionHolder = new BeanDefinitionHolder(candidate, beanName);
+					// ProxyMode处理
 					definitionHolder =
 							AnnotationConfigUtils.applyScopedProxyMode(scopeMetadata, definitionHolder, this.registry);
 					beanDefinitions.add(definitionHolder);
+					// 注册beanDefinition
+					// 核心就是往Map<String, BeanDefinition>构建BeanDefinition与beanName的关联，以及beanName与Aliases的关联
 					registerBeanDefinition(definitionHolder, this.registry);
 				}
 			}
